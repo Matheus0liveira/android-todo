@@ -1,13 +1,9 @@
 package com.matheus0liveira.todo
 
 import android.annotation.SuppressLint
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.ColorMatrixColorFilter
+import android.content.Intent
+
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -19,7 +15,6 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.matheus0liveira.todo.model.Todo
@@ -63,10 +58,8 @@ class MainActivity : AppCompatActivity() {
             Thread {
 
                 val todo = Todo(value = todoText.text.toString())
-
-
-                todoDao.create(todo)
-
+                val id = todoDao.create(todo)
+                todo.id = id.toInt()
                 runOnUiThread {
                     todoItems.add(todo)
 
@@ -96,11 +89,10 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+
         menuInflater.inflate(R.menu.main_menu, menu)
 
-        if (menu is MenuBuilder) {
-            menu.setOptionalIconsVisible(true)
-        }
+        if (menu is MenuBuilder) menu.setOptionalIconsVisible(true)
 
 
 
@@ -111,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
         return when (item.itemId) {
             R.id.show_all_items -> {
-                Log.i("CLICKED", "true")
+                startActivity(Intent(this, ListTodos::class.java))
                 true
             }
 
@@ -140,7 +132,6 @@ class MainActivity : AppCompatActivity() {
 
         private inner class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-            @SuppressLint("ResourceAsColor")
             fun bind(item: Todo, position: Int) {
 
                 val checkbox = itemView.findViewById<CheckBox>(R.id.todo_item_checkbox)

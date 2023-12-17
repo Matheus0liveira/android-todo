@@ -11,7 +11,7 @@ interface TodoDao {
     fun getAll(): List<Todo>
 
     @Insert
-    fun create(todo: Todo)
+    fun create(todo: Todo): Long
 
     @Update
     fun update(todo: Todo)
