@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Todo</string>
     <string name="show_all">Mostrar todos</string>
+    <string name="trash_icon">Trash icon</string>
+    <string name="save">Salvar</string>
+    <string name="make_coffee">Fazer café</string>
 </resources>

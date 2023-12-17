@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:gravity="center"
+    android:background="@drawable/border_bottom">
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".70">
+
+        <CheckBox
+            android:id="@+id/todo_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/todo_item_value"
+            android:background="@null"
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            tools:text="Make a coffee" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/todo_item_btn"
+        android:layout_width="0dp"
+        android:layout_weight=".10"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_corners"
+
+        android:src="@drawable/baseline_delete_forever_24"
+        android:contentDescription="@string/trash_icon"
+        android:gravity="center" />
+
+
+</LinearLayout>
