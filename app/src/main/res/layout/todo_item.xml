@@ -9,32 +9,20 @@
     android:background="@drawable/border_bottom">
 
 
-    <LinearLayout
+    <CheckBox
+        android:id="@+id/todo_item_checkbox"
         android:layout_width="0dp"
+        android:layout_weight=".70"
         android:layout_height="wrap_content"
-        android:layout_weight=".70">
+        tools:text="Make a coffee" />
 
-        <CheckBox
-            android:id="@+id/todo_item_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/todo_item_value"
-            android:background="@null"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            tools:text="Make a coffee" />
-    </LinearLayout>
 
     <ImageButton
         android:id="@+id/todo_item_btn"
         android:layout_width="0dp"
         android:layout_weight=".10"
         android:layout_height="match_parent"
-        android:background="@drawable/rounded_corners"
+        android:background="@drawable/red_bg_rounded_corners"
 
         android:src="@drawable/baseline_delete_forever_24"
         android:contentDescription="@string/trash_icon"

@@ -1,14 +1,17 @@
 package com.matheus0liveira.todo
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -19,49 +22,23 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.matheus0liveira.todo.model.Todo
+import com.matheus0liveira.todo.model.TodoDao
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var todoItems: MutableList<Todo>
     private lateinit var adapter: MainAdapter
+    private lateinit var todoDao: TodoDao
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        todoDao = (application as App).db.todoDao()
+
         setContentView(R.layout.activity_main)
 
         todoItems = mutableListOf()
-        todoItems.add(
-            Todo(
-                id = 1,
-                value = "Make a coffe"
-            )
-        )
-        todoItems.add(
-            Todo(
-                id = 2,
-                value = "Make a Tea"
-            )
-        )
-        todoItems.add(
-            Todo(
-                id = 3,
-                value = "Make a Tea 1"
-            )
-        )
-        todoItems.add(
-            Todo(
-                id = 4,
-                value = "Make a Tea 2"
-            )
-        )
-        todoItems.add(
-            Todo(
-                id = 5,
-                value = "Make a Tea 3"
-            )
-        )
-
-
         adapter = MainAdapter(todoItems)
 
         val rv = findViewById<RecyclerView>(R.id.rv_list_todo)
@@ -83,15 +60,36 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            todoItems.add(
-                Todo(
-                    id = todoItems.size + 1,
-                    value = todoText.text.toString()
-                )
-            )
-            adapter.notifyItemInserted(todoItems.size + 1)
-            todoText.text.clear()
+            Thread {
+
+                val todo = Todo(value = todoText.text.toString())
+
+
+                todoDao.create(todo)
+
+                runOnUiThread {
+                    todoItems.add(todo)
+
+                    adapter.notifyItemInserted(todoItems.size + 1)
+                    todoText.text.clear()
+                }
+
+
+            }.start()
+
+
         }
+
+        Thread {
+
+            val allTodos = todoDao.getAll().filter { !it.isRemoved }
+
+            runOnUiThread {
+                todoItems.addAll(allTodos)
+                adapter.notifyDataSetChanged()
+            }
+
+        }.start()
 
     }
 
@@ -142,33 +140,28 @@ class MainActivity : AppCompatActivity() {
 
         private inner class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+            @SuppressLint("ResourceAsColor")
             fun bind(item: Todo, position: Int) {
 
                 val checkbox = itemView.findViewById<CheckBox>(R.id.todo_item_checkbox)
                 val trashBtn = itemView.findViewById<ImageButton>(R.id.todo_item_btn)
-                val todoItemValue = itemView.findViewById<EditText>(R.id.todo_item_value)
 
-                todoItemValue.setText(item.getValue())
-                checkbox.isChecked = item.getIsCheck()
+                checkbox.isChecked = item.isCheck
+                checkbox.text = item.value
 
-                todoItemValue.addTextChangedListener {
-
-                    Log.i("OUXII", "$it")
-                    mainItems[position].setValue(it.toString())
-                }
-
-
-
-
-
-                checkbox.setOnClickListener {
-                    mainItems[position].setIsCheck(!item.getIsCheck())
-                    adapter.notifyItemChanged(position)
-                }
-
+                checkbox.setOnClickListener { mainItems[position].isCheck = !item.isCheck }
                 trashBtn.setOnClickListener {
-                    todoItems.removeAt(position)
-                    adapter.notifyDataSetChanged()
+
+                    Thread {
+                        item.isRemoved = true
+                        todoDao.update(item)
+
+                        runOnUiThread {
+                            todoItems.removeAt(position)
+                            adapter.notifyDataSetChanged()
+                        }
+
+                    }.start()
                 }
             }
 
